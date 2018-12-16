@@ -1,0 +1,216 @@
+consumes:
+- application/json
+- application/xml
+- application/gob
+- application/x-gob
+definitions:
+  error:
+    description: Error response media type (default view)
+    example:
+      code: invalid_value
+      detail: Value of ID must be an integer
+      id: 3F1FKVRR
+      meta:
+        timestamp: 1.458609066e+09
+      status: "400"
+    properties:
+      code:
+        description: an application-specific error code, expressed as a string value.
+        example: invalid_value
+        type: string
+      detail:
+        description: a human-readable explanation specific to this occurrence of the
+          problem.
+        example: Value of ID must be an integer
+        type: string
+      id:
+        description: a unique identifier for this particular occurrence of the problem.
+        example: 3F1FKVRR
+        type: string
+      meta:
+        additionalProperties: true
+        description: a meta object containing non-standard meta-information about
+          the error.
+        example:
+          timestamp: 1.458609066e+09
+        type: object
+      status:
+        description: the HTTP status code applicable to this problem, expressed as
+          a string value.
+        example: "400"
+        type: string
+    title: 'Mediatype identifier: application/vnd.goa.error; view=default'
+    type: object
+host: localhost:2626
+info:
+  description: Add or delete data
+  title: Data client to add or delete data
+  version: ""
+paths:
+  /model/askData/{hash}/{ETH_key}/{transID}:
+    post:
+      description: ask for data
+      operationId: ModelProvider#askData
+      parameters:
+      - description: ETH private key for transaction
+        in: path
+        name: ETH_key
+        required: true
+        type: string
+      - description: data hash
+        in: path
+        name: hash
+        required: true
+        type: string
+      - description: ask data for transaction[ID]
+        in: path
+        name: transID
+        required: true
+        type: integer
+      produces:
+      - application/vnd.goa.error
+      - plain/text
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/error'
+      schemes:
+      - http
+      summary: askData ModelProvider
+      tags:
+      - ModelProvider
+  /model/upload/{hash}/{ETH_key}/{HE_key}/{RSA_key}:
+    post:
+      description: upload model
+      operationId: ModelProvider#upload
+      parameters:
+      - description: ETH private key for transaction
+        in: path
+        name: ETH_key
+        required: true
+        type: string
+      - description: Homomorphic Encryption Key
+        in: path
+        name: HE_key
+        required: true
+        type: string
+      - description: RSA public key
+        in: path
+        name: RSA_key
+        required: true
+        type: string
+      - description: encrypted model IPFS address
+        in: path
+        name: hash
+        required: true
+        type: string
+      produces:
+      - application/vnd.goa.error
+      - plain/text
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/error'
+      schemes:
+      - http
+      summary: upload ModelProvider
+      tags:
+      - ModelProvider
+  /model/uploadFinal/{hash}/{rsa_key}/{trans_id}/{ETH_key}:
+    post:
+      description: upload final argument and final distance for transaction ID
+      operationId: ModelProvider#uploadFinal
+      parameters:
+      - description: ETH private key for transaction
+        in: path
+        name: ETH_key
+        required: true
+        type: string
+      - description: final arguments hash
+        in: path
+        name: hash
+        required: true
+        type: string
+      - description: rsa private key for transaction id
+        in: path
+        name: rsa_key
+        required: true
+        type: string
+      - description: transaction_id
+        in: path
+        name: trans_id
+        required: true
+        type: integer
+      produces:
+      - application/vnd.goa.error
+      - plain/text
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/error'
+      schemes:
+      - http
+      summary: uploadFinal ModelProvider
+      tags:
+      - ModelProvider
+  /swagger-ui/{filepath}:
+    get:
+      operationId: swagger-ui#/swagger-ui/*filepath
+      parameters:
+      - description: Relative file path
+        in: path
+        name: filepath
+        required: true
+        type: string
+      responses:
+        "200":
+          description: File downloaded
+          schema:
+            type: file
+        "404":
+          description: File not found
+          schema:
+            $ref: '#/definitions/error'
+      schemes:
+      - http
+      summary: Download swagger-ui/
+  /swagger.json:
+    get:
+      operationId: swagger#/swagger.json
+      responses:
+        "200":
+          description: File downloaded
+          schema:
+            type: file
+      schemes:
+      - http
+      summary: Download swagger/swagger.json
+produces:
+- application/json
+- application/xml
+- application/gob
+- application/x-gob
+schemes:
+- http
+swagger: "2.0"
