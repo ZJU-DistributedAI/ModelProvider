@@ -5,9 +5,9 @@ import (
 	. "github.com/goadesign/goa/design/apidsl"
 )
 
-var _ = API("DataClient", func() {
-	Title("Data client to add or delete data")
-	Description("Add or delete data")
+var _ = API("Model Provider Client", func() {
+	Title("Model Provider Client")
+	Description("Model Provider Client")
 	Scheme("http")
 	Host("localhost:2626")
 })
@@ -21,35 +21,52 @@ var _ = API("DataClient", func() {
 var _ = Resource("ModelProvider", func() {
 	BasePath("/model")
 
-	Action("upload", func() {
-		// 模型上传之后，在智能合约中应该生成一个transaction id
-		Description("upload model")
-		Routing(POST("/upload/:hash/:ETH_key/:HE_key/:RSA_key"))
+	Action("create", func() {
+		Description("create smart contract")
+		Routing(POST("/create/:ETH_key/:smart_contract"))
 		Params(func() {
-			Param("hash", String, "encrypted model IPFS address")
-			Param("ETH_key", String, "ETH private key for transaction") // use it to send transaction
-			Param("HE_key", String, "Homomorphic Encryption Key")
-			Param("RSA_key", String, "RSA public key")
+			Param("smart_contract", String, "smart contract")					// 智能合约
+			Param("ETH_key", String, "ETH private key for transaction")		// 以太坊交易秘钥，以后会隐藏
+		})
+		Response(OK,  "plain/text")	// 返回智能合约的地址
+		Response(InternalServerError, ErrorMedia)
+		Response(BadRequest, ErrorMedia)
+		Response(NotImplemented, ErrorMedia)
+	})
+
+
+	Action("upload", func() {
+		Description("upload model")
+		Routing(POST("/upload/:model_hash/:ETH_key/:HE_key/:RSA_key/:contract_hash"))
+		Params(func() {
+			Param("model_hash", String, "encrypted model IPFS address")	// 同态加密之后的模型地址
+			Param("ETH_key", String, "ETH private key for transaction")	// 以太坊交易秘钥，以后会隐藏
+			Param("HE_key", String, "Homomorphic Encryption Key")			// 同态加密公钥
+			Param("RSA_key", String, "RSA public key")					// RSA 公钥
+			Param("contract_hash", String, "smart contract hash")			// 智能合约的地址，之后使用智能合约地址代替模型地址
 		})
 		Response(OK,  "plain/text")
 		Response(InternalServerError, ErrorMedia)
 		Response(BadRequest, ErrorMedia)
+		Response(NotImplemented, ErrorMedia)
 	})
 
 	Action("askData", func() {
-		// 模型方请求之后，在智能合约中应该生成一个请求ID [ request_id ]， 每一个 [ request_id ] 都会对应一个数据和一个运算方
 		Description("ask for data")
-		Routing(POST("/askData/:hash/:ETH_key/:transID"))
+		Routing(POST("/askData/:data_hash/:ETH_key/:contract_hash"))
 		Params(func() {
-			Param("hash", String, "data hash")
-			Param("ETH_key", String, "ETH private key for transaction")
-			Param("transID", Integer, "ask data for transaction[ID]")
+			// 智能合约地址和被请求的数据的地址可以成为数据请求的唯一标识
+			Param("ETH_key", String, "ETH private key for transaction")	// 以太坊交易秘钥，以后会隐藏
+			Param("data_hash", String, "data hash")						// 被请求的数据的ipfs地址
+			Param("contract_hash", String, "smart contract hash")			// 智能合约的地址
 		})
 		Response(OK,  "plain/text")
 		Response(InternalServerError, ErrorMedia)
 		Response(BadRequest, ErrorMedia)
+		Response(NotImplemented, ErrorMedia)
 	})
 
+	//TODO
 	Action("uploadFinal", func() {
 		Description("upload final argument and final distance for transaction ID")
 		Routing(POST("/uploadFinal/:hash/:rsa_key/:trans_id/:ETH_key"))
@@ -62,6 +79,7 @@ var _ = Resource("ModelProvider", func() {
 		Response(OK,  "plain/text")
 		Response(InternalServerError, ErrorMedia)
 		Response(BadRequest, ErrorMedia)
+		Response(NotImplemented, ErrorMedia)
 	})
 
 })

@@ -18,9 +18,9 @@ func main() {
 	service.Use(middleware.ErrorHandler(service, true))
 	service.Use(middleware.Recover())
 
-	// Mount "ComputingProvider" controller
-	c := NewComputingProviderController(service)
-	app.MountComputingProviderController(service, c)
+	// Mount "ModelProvider" controller
+	c := NewModelProviderController(service)
+	app.MountModelProviderController(service, c)
 	// Mount "swagger" controller
 	c2 := NewSwaggerController(service)
 	app.MountSwaggerController(service, c2)

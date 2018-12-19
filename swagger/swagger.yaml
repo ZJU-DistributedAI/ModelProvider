@@ -43,11 +43,11 @@ definitions:
     type: object
 host: localhost:2626
 info:
-  description: Add or delete data
-  title: Data client to add or delete data
+  description: Model Provider Client
+  title: Model Provider Client
   version: ""
 paths:
-  /model/askData/{hash}/{ETH_key}/{transID}:
+  /model/askData/{data_hash}/{ETH_key}/{contract_hash}:
     post:
       description: ask for data
       operationId: ModelProvider#askData
@@ -57,16 +57,16 @@ paths:
         name: ETH_key
         required: true
         type: string
-      - description: data hash
+      - description: smart contract hash
         in: path
-        name: hash
+        name: contract_hash
         required: true
         type: string
-      - description: ask data for transaction[ID]
+      - description: data hash
         in: path
-        name: transID
+        name: data_hash
         required: true
-        type: integer
+        type: string
       produces:
       - application/vnd.goa.error
       - plain/text
@@ -81,12 +81,54 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/error'
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/error'
       schemes:
       - http
       summary: askData ModelProvider
       tags:
       - ModelProvider
-  /model/upload/{hash}/{ETH_key}/{HE_key}/{RSA_key}:
+  /model/create/{ETH_key}/{smart_contract}:
+    post:
+      description: create smart contract
+      operationId: ModelProvider#create
+      parameters:
+      - description: ETH private key for transaction
+        in: path
+        name: ETH_key
+        required: true
+        type: string
+      - description: smart contract
+        in: path
+        name: smart_contract
+        required: true
+        type: string
+      produces:
+      - application/vnd.goa.error
+      - plain/text
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/error'
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/error'
+      schemes:
+      - http
+      summary: create ModelProvider
+      tags:
+      - ModelProvider
+  /model/upload/{model_hash}/{ETH_key}/{HE_key}/{RSA_key}/{contract_hash}:
     post:
       description: upload model
       operationId: ModelProvider#upload
@@ -106,9 +148,14 @@ paths:
         name: RSA_key
         required: true
         type: string
+      - description: smart contract hash
+        in: path
+        name: contract_hash
+        required: true
+        type: string
       - description: encrypted model IPFS address
         in: path
-        name: hash
+        name: model_hash
         required: true
         type: string
       produces:
@@ -123,6 +170,10 @@ paths:
             $ref: '#/definitions/error'
         "500":
           description: Internal Server Error
+          schema:
+            $ref: '#/definitions/error'
+        "501":
+          description: Not Implemented
           schema:
             $ref: '#/definitions/error'
       schemes:
@@ -167,6 +218,10 @@ paths:
             $ref: '#/definitions/error'
         "500":
           description: Internal Server Error
+          schema:
+            $ref: '#/definitions/error'
+        "501":
+          description: Not Implemented
           schema:
             $ref: '#/definitions/error'
       schemes:
