@@ -4,11 +4,16 @@ package main
 
 import (
 	"ModelProvider/app"
+	"fmt"
 	"github.com/goadesign/goa"
 	"github.com/goadesign/goa/middleware"
+	"os"
 )
 
 func main() {
+	//设置全局参数
+	set_all_env_parameter()
+
 	// Create service
 	service := goa.New("DataClient")
 
@@ -32,5 +37,12 @@ func main() {
 	if err := service.ListenAndServe(":2626"); err != nil {
 		service.LogError("startup", "err", err)
 	}
+}
 
+func set_all_env_parameter(){
+	err := os.Setenv("IPFS_HOST","http://47.52.231.230:8899/storage")
+
+	if err != nil {
+		fmt.Print(err)
+	}
 }

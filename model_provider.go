@@ -2,6 +2,7 @@ package main
 
 import (
 	"ModelProvider/app"
+	"fmt"
 	"github.com/goadesign/goa"
 )
 
@@ -19,8 +20,7 @@ func NewModelProviderController(service *goa.Service) *ModelProviderController {
 func (c *ModelProviderController) AskData(ctx *app.AskDataModelProviderContext) error {
 	// ModelProviderController_AskData: start_implement
 
-	// Put your logic here
-
+	// Put your logic her
 	return ctx.NotImplemented(goa.ErrInternal("Not implemented"))
 	// ModelProviderController_AskData: end_implement
 }
@@ -37,11 +37,25 @@ func (c *ModelProviderController) Create(ctx *app.CreateModelProviderContext) er
 
 // Upload runs the upload action.
 func (c *ModelProviderController) Upload(ctx *app.UploadModelProviderContext) error {
-	// ModelProviderController_Upload: start_implement
 
-	// Put your logic here
+	//compress all files to zip, zip file's name is model's name
+	err := compress(ctx.ModelHash,ctx.RSAKey,ctx.HEKey,ctx.ETHKey)
+	if err != nil{
+		fmt.Print("err:",err)
+		return ctx.BadRequest(err)
+	}
 
-	return ctx.NotImplemented(goa.ErrInternal("Not implemented"))
+	//upload zip
+	zipName := get_file_name(ctx.ModelHash) + ".zip"
+	err = uploadModel(zipName)
+	if err != nil{
+		fmt.Println(err)
+	}
+
+	delete_file(zipName)
+
+	return ctx.OK([]byte(ctx.ETHKey))
+	//return ctx.NotImplemented(goa.ErrInternal("Not implemented"))
 	// ModelProviderController_Upload: end_implement
 }
 
